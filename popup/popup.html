@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>港股招股书信息提取器v1.0 @Siber</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+    <div style="width:100%;text-align:center;margin-bottom:10px;">
+        <img src="../assets/lawmoz_logo.png" alt="LawMoZ Logo" style="width:80px;height:auto;display:inline-block;" />
+    </div>
+    <h1>LawMoZ - 港股招股书信息提取器</h1>
+<div id="siber-presented" style="text-align:center;margin:8px 0 12px 0;font-size:13px;color:#888;">
+  Proudly presented by <a href="#" id="siber-link" style="color:#5864e8;text-decoration:underline;cursor:pointer;">@Siber</a>
+</div>
+    <div id="status" class="status">正在检查页面状态...</div>
+</header>
+        
+        <div id="loading" class="loading" style="display: none;">
+            <div class="progress-bar"><div class="progress-inner"></div></div>
+            <span>💦正在为您节省睡眠时间...请勿离开本界面</span>
+        </div>
+        
+        <div class="actions">
+            <button id="extract" class="btn primary" disabled>🌟一键提取</button>
+            <button id="copyText" class="btn secondary" disabled>✂️复制提取结果</button>
+            <button id="viewChinese" class="btn secondary" disabled>⏬下载繁中版</button>
+        </div>
+        
+        <div id="results" class="results">
+            <div class="placeholder">点击“🌟一键提取”按钮开始提取</div>
+        </div>
+
+
+        <footer>
+    
+    <div class="info" style="color:#5864e8;">
+        <p>版本号 v1.0.0<br>© 2025 LawmoZ. All rights reserved.</p>
+    </div>
+</footer>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>

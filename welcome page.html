@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>港股招股书信息提取器 - 让阅读从未如此简单</title>
+    <link rel="icon" type="image/png" href="assets/lawmoz_logo.png">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>港股招股书信息提取器 - 让阅读从未如此简单</title>
+    <style>
+        /* CSS Variables: 定义了整个页面的颜色、字体、尺寸等基础样式 */
+        :root {
+            --primary-color: #5864e8; /* 用户指定的主色调 */
+            --primary-hover-color: #4752c4; /* 主色调悬停效果 */
+            --text-color-dark: #1d1d1f; /* 深色文字，接近苹果官网黑色 */
+            --text-color-medium: #515154; /* 中等灰度文字 */
+            --text-color-light: #86868b; /* 浅色辅助文字 */
+            --text-color-white: #ffffff; /* 白色文字 */
+            --bg-color-light: #f5f5f7; /* 浅灰背景，苹果常用 */
+            --bg-color-white: #ffffff;
+            --border-color: #e0e0e0; /* 细微的边框颜色 */
+            --font-family-apple: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 仿苹果字体栈 */
+            --container-max-width: 980px; /* 常用内容宽度 */
+            --border-radius: 14px; /* 更现代化的圆角 */
+            --box-shadow-soft: 0 6px 16px rgba(0, 0, 0, 0.07); /* 更柔和的阴影 */
+            --box-shadow-interactive: 0 8px 20px rgba(0,0,0,0.1); /* 交互元素悬停阴影 */
+            --icon-size-small: 20px; 
+            --icon-size-medium: 28px; 
+            --icon-size-large: 44px;  
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family-apple);
+            line-height: 1.7; 
+            color: var(--text-color-dark);
+            background-color: var(--bg-color-white);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: var(--container-max-width);
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 24px; 
+        }
+
+        /* 图标通用样式 */
+        .inline-svg-icon {
+            display: inline-block;
+            width: var(--icon-size-small); 
+            height: var(--icon-size-small);
+            vertical-align: middle;
+            fill: currentColor; 
+        }
+        .section-icon { 
+            display: block;
+            margin: 0 auto 24px auto; 
+            width: var(--icon-size-large);
+            height: var(--icon-size-large);
+            color: #5864e8; 
+        }
+
+
+        /* 头部 Hero 区域 */
+        .hero-section {
+            text-align: center;
+            padding: 80px 20px 60px; 
+            background-color: #5864e8; 
+            color: var(--text-color-white); 
+        }
+        .hero-section h1 {
+            font-size: clamp(2.5rem, 5.5vw, 3.8rem); 
+            font-weight: 700; 
+            line-height: 1.2;
+            margin-bottom: 20px; 
+        }
+        .hero-section .subtitle {
+            font-size: clamp(1.1rem, 2.8vw, 1.5rem); 
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.85); 
+            margin-bottom: 30px; 
+            max-width: 720px; 
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-section .promise {
+            font-size: clamp(1.2rem, 3.3vw, 1.75rem); 
+            font-weight: 600; 
+            margin-bottom: 30px; 
+        }
+       
+        /* 工具介绍与下载区域 */
+        .tool-introduction-section {
+            text-align: center;
+            padding: 60px 20px 80px; 
+            background-color: var(--bg-color-light); 
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tool-introduction-section .tool-main-icon {
+            width: 72px; 
+            height: auto; 
+            margin: 0 auto 30px auto; 
+            display: block;
+        }
+        .tool-introduction-section h2 { 
+            font-size: clamp(2rem, 4.5vw, 3rem); 
+            font-weight: 700;
+            color: var(--text-color-dark); 
+            margin-bottom: 20px; 
+        }
+        .tool-introduction-section .tool-description {
+            font-size: clamp(1.05rem, 2.4vw, 1.2rem); 
+            color: var(--text-color-medium);
+            max-width: 720px; 
+            margin: 0 auto 40px auto; 
+            line-height: 1.75; 
+        }
+        .download-extension-button {
+            display: inline-flex; 
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover-color) 100%);
+            color: var(--bg-color-white);
+            padding: 18px 42px; 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: all 0.25s ease-in-out;
+            margin-bottom: 25px; 
+            box-shadow: 0 5px 20px rgba(88, 100, 232, 0.25); 
+        }
+        .download-extension-button:hover {
+            background: linear-gradient(135deg, var(--primary-hover-color) 0%, var(--primary-color) 100%);
+            transform: translateY(-3px) scale(1.02); 
+            box-shadow: 0 8px 25px rgba(88, 100, 232, 0.3);
+        }
+        .download-extension-button .inline-svg-icon {
+            width: 22px; 
+            height: 22px;
+            margin-right: 12px; 
+            fill: white;
+        }
+        .already-downloaded-link { 
+            display: block;
+            font-size: 1rem; 
+        }
+        .already-downloaded-link a {
+            color: #5864e8; 
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid var(--primary-color); 
+            padding-bottom: 2px; 
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .already-downloaded-link a:hover {
+            color: var(--primary-hover-color);
+            border-bottom-color: var(--primary-hover-color);
+        }
+
+
+        /* 内容区域通用样式 */
+        .content-section {
+            padding: 80px 0; 
+            border-bottom: 1px solid var(--border-color);
+        }
+        .content-section:first-of-type { 
+             padding-top: 80px;
+        }
+        .content-section:last-child {
+            border-bottom: none;
+        }
+        .content-section h2 { 
+            font-size: clamp(2rem, 4.5vw, 3rem); 
+            font-weight: 700; 
+            text-align: center;
+            margin-bottom: 60px; 
+            color: #5864e8; 
+        }
+        .content-section .section-subtitle { 
+            font-size: 1.15rem; 
+            color: var(--text-color-medium);
+            max-width: 750px; 
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            margin-bottom: 50px; 
+            line-height: 1.75;
+        }
+
+        /* 痛点与价值对比区域 */
+        .value-proposition .problem-statement {
+            font-size: 1.25rem; 
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--text-color-dark);
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 35px; 
+            margin-top: 50px;
+        }
+        .comparison-card {
+            background-color: var(--bg-color-white); 
+            padding: 35px; 
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            text-align: center; 
+            box-shadow: var(--box-shadow-soft);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .comparison-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--box-shadow-interactive);
+        }
+        .comparison-card h3 { 
+            font-size: 1.6rem; 
+            font-weight: 600;
+            margin-top: 10px; 
+            margin-bottom: 25px;
+            color: var(--text-color-dark); 
+        }
+        .comparison-card.after-card h3 { 
+            color: var(--primary-color);
+        }
+        .comparison-card ul {
+            list-style: none;
+            padding-left: 0;
+            text-align: left; 
+            display: inline-block; 
+        }
+        .comparison-card ul li {
+            font-size: 1.05rem; 
+            margin-bottom: 14px;
+            padding-left: 30px;
+            position: relative;
+            color: var(--text-color-medium);
+        }
+        .comparison-card.before-card ul li::before { content: "✕"; color: #ff4d4f; position: absolute; left: 0; top: 1px; font-weight: bold; font-size: 1.3rem; }
+        .comparison-card.after-card ul li::before { content: "✓"; color: #52c41a; position: absolute; left: 0; top: 1px; font-weight: bold; font-size: 1.3rem;}
+        .comparison-card .section-icon { 
+            width: var(--icon-size-large);
+            height: var(--icon-size-large);
+            margin-bottom: 20px;
+        }
+
+
+        /* 核心步骤区域 */
+        .steps-list { display: grid; grid-template-columns: 1fr; gap: 25px; list-style: none; padding: 0; margin-top: 25px; }
+        @media (min-width: 768px) { .steps-list { grid-template-columns: repeat(3, 1fr); gap: 30px; } }
+        .steps-list li { background-color: var(--bg-color-white); padding: 35px; border-radius: var(--border-radius); text-align: center; box-shadow: var(--box-shadow-soft); border: 1px solid var(--border-color); transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .steps-list li:hover { transform: translateY(-5px); box-shadow: var(--box-shadow-interactive); }
+        .steps-list .step-icon { margin-bottom: 20px; color: #5864e8; }
+        .steps-list .step-icon svg { width: var(--icon-size-large); height: var(--icon-size-large); }
+        .steps-list h3 { font-size: 1.4rem; font-weight: 600; margin-bottom: 12px; color: #5864e8; }
+        .steps-list li .step-description { font-size: 1rem; color: var(--text-color-medium); margin-bottom: 0; }
+
+        /* ==================== 优化区域开始 (最新动态/关键产出/技术/作者) ==================== */
+
+        /* 最新动态区域 */
+        .whats-new-section {
+            background-color: var(--bg-color-white); 
+            padding-bottom: 100px;
+        }
+        .whats-new-section h2 .inline-svg-icon { 
+            width: 32px; height: 32px; margin-right: 8px; vertical-align: -4px;
+        }
+
+        /* 循环滚动动画 */
+        @keyframes scroll-left {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        .scrolling-container {
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+            mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+            position: relative;
+            margin-top: -20px;
+        }
+
+        .scrolling-wrapper {
+            display: flex;
+            width: fit-content; /* 让宽度由内容决定 */
+            animation: scroll-left 40s linear infinite; /* 调整动画时间以控制速度 */
+        }
+        
+        .scrolling-container:hover .scrolling-wrapper {
+            animation-play-state: paused;
+        }
+
+        .update-cards-container {
+            display: flex;
+            flex-shrink: 0;
+            gap: 30px; /* 卡片间距 */
+            padding: 20px 15px; /* 给容器一些内边距，防止卡片紧贴边缘 */
+        }
+
+        .update-card {
+            flex: 0 0 340px; /* 固定卡片宽度 */
+            width: 340px;
+            background-color: var(--bg-color-light); 
+            padding: 30px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--box-shadow-soft);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .update-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--box-shadow-interactive);
+        }
+        .update-card .update-date {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-color-light);
+            margin-bottom: 12px;
+        }
+        .update-card h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .update-card h3 .inline-svg-icon { 
+             width: 20px; height: 20px; margin-right: 6px; vertical-align: -2px;
+        }
+        .update-card p {
+            font-size: 0.95rem;
+            color: var(--text-color-medium);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .update-card ul {
+            list-style-position: inside;
+            padding-left: 0; 
+            margin-bottom: 0;
+        }
+        .update-card ul li {
+            font-size: 0.95rem;
+            color: var(--text-color-medium);
+            margin-bottom: 8px;
+            list-style-type: "✓  "; 
+        }
+
+        /* 关键产出区域 */
+        .features-showcase .feature-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 30px; 
+            margin-top: 25px;
+        }
+        .feature-item { 
+            background-color: var(--bg-color-light); 
+            padding: 30px; 
+            border-radius: var(--border-radius); 
+            text-align: center; 
+            border: 1px solid var(--border-color); 
+            box-shadow: var(--box-shadow-soft); 
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .feature-item:hover { 
+            transform: translateY(-4px); 
+            box-shadow: var(--box-shadow-interactive); 
+        }
+        .feature-item .feature-icon svg { 
+            width: var(--icon-size-medium); 
+            height: var(--icon-size-medium); 
+            color: #5864e8; 
+            margin-bottom: 20px; 
+        }
+        .feature-item h3 { 
+            font-size: 1.3rem; 
+            font-weight: 600; 
+            margin-bottom: 10px; 
+            color: #5864e8; 
+        }
+        .feature-item p { 
+            font-size: 0.95rem; 
+            color: var(--text-color-medium); 
+            margin-bottom: 0; 
+        }
+        
+        /* 技术解密区域 */
+        .tech-explained {
+            background-color: var(--bg-color-light);
+            text-align: center;
+        }
+        .tech-explained h2 {
+            margin-bottom: 20px;
+        }
+        .tech-quote {
+            font-size: 1.25rem;
+            font-style: italic;
+            color: var(--text-color-dark);
+            margin: 0 auto 40px auto;
+            max-width: 600px;
+            font-weight: 500;
+        }
+        .tech-description {
+            max-width: 720px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        .tech-description .powered-by {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: block;
+            text-align: center;
+        }
+        .tech-description h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color-dark);
+            margin-top: 25px;
+            margin-bottom: 8px;
+        }
+        .tech-description p {
+            font-size: 1.05rem;
+            color: var(--text-color-medium);
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        .tech-description .advanced-users-note {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--bg-color-white);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        .tech-description .advanced-users-note a {
+            color: var(--primary-color);
+            font-weight: 500;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+        .tech-description .advanced-users-note a:hover {
+            border-bottom-color: var(--primary-color);
+        }
+       
+        /* 关于作者区域 */
+        .author-section { 
+            background-color: var(--bg-color-white); 
+            padding: 80px 0; 
+        }
+        .author-section h2 { 
+            margin-bottom: 40px; 
+        }
+        .author-section .about-author {
+            max-width: 700px; 
+            margin: 0 auto 40px auto;
+            text-align: center;
+        }
+        .author-section .about-author p { 
+            font-size: 1.15rem; 
+            line-height: 1.75; 
+            color: var(--text-color-medium); 
+            margin-bottom: 0;
+        }
+        .qr-container { display: flex; justify-content: center; gap: 45px; margin-top: 35px; flex-wrap: wrap; }
+        .qr-code-item { text-align: center; }
+        .qr-code-placeholder { width: 150px; height: 150px; background-color: var(--border-color); border-radius: var(--border-radius); display: flex; align-items: center; justify-content: center; color: var(--text-color-medium); font-size: 0.9rem; margin-bottom: 12px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .qr-code-item p { font-size: 0.95rem; color: var(--text-color-medium); margin-bottom: 0; }
+        
+        /* ==================== 优化区域结束 ==================== */
+
+
+        /* 页脚 */
+        .footer { text-align: center; padding: 50px 20px; font-size: 0.95rem; color: var(--text-color-light); background-color: var(--bg-color-white); border-top: 1px solid var(--border-color); }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            /* 修改：为feature-grid增加响应式，在小屏幕上变为单列 */
+            .comparison-grid, .feature-grid { 
+                grid-template-columns: 1fr; 
+            }
+            .hero-section h1 { font-size: 2.3rem; }
+            .hero-section .subtitle { font-size: 1.05rem; }
+            .hero-section .promise { font-size: 1.35rem; }
+            .tool-introduction-section h2 { font-size: 1.8rem; }
+            .content-section h2 { font-size: 1.9rem; }
+            /* 在小屏幕上不显示滚动效果，直接堆叠 */
+            .scrolling-container {
+                -webkit-mask-image: none;
+                mask-image: none;
+                overflow: visible;
+            }
+            .scrolling-wrapper {
+                flex-direction: column;
+                gap: 30px;
+                animation: none;
+            }
+            .update-cards-container {
+                display: contents; /* 让卡片直接成为scrolling-wrapper的子元素 */
+            }
+            .update-cards-container[aria-hidden="true"] {
+                display: none; /* 隐藏复制的卡片 */
+            }
+            .update-card {
+                width: 100%;
+                flex-basis: auto;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Hero 区域: 这是什么？它能为我做什么？ -->
+    <header class="hero-section">
+        <div class="container">
+            <h1>读一本招股书，从未如此简单。</h1>
+            <p class="subtitle">一款由 AI 驱动的 Chrome 扩展。<br>强大、直观。</p>
+            <p class="promise">只需 30 秒，所有关键，尽在掌握。</p>
+        </div>
+    </header>
+
+    <!-- 工具介绍与下载区域 -->
+    <section class="tool-introduction-section">
+        <div class="container">
+            <img src="assets/lawmoz_logo.png" alt="LawMoZ Logo" class="tool-main-icon" style="width:72px;height:auto;display:block;margin:0 auto 30px auto;" onerror="this.onerror=null;this.src='https://placehold.co/100x100/EFEFEF/333333?text=Logo+Not+Found';">
+            <div style="text-align:center;margin-bottom:4px;">
+                <div style="font-size:2.1rem;font-weight:700;color:#5864e8;line-height:1.1;">LawMoZ</div>
+                <div style="font-size:1.05rem;color:#5864e8;margin-top:2px;letter-spacing:0.5px;">让交易律师不再 no more sleep</div>
+            </div>
+            <h2>港股招股书信息提取器</h2>
+<p class="tool-description">
+    为频繁处理港股招股书的专业人士设计：LawMoZ 利用 AI 技术，自动从数百页招股书PDF中精准提取核心数据，告别繁琐整理，聚焦深度分析。
+</p>
+                <a href="#about-siber" class="download-extension-button" style="margin-right:12px;">
+                 <svg class="inline-svg-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"></path></svg>
+                立即试用
+            </a>
+            <a href="https://github.com/siberpunk27/lawmoz-hkex-pptus-info-extractor" class="download-extension-button" style="background-color:#5864e8;color:#fff;border:1.5px solid #5864e8;" target="_blank">
+                 <svg class="inline-svg-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"></path></svg>
+                Github自行安装
+            </a>
+            <p class="already-downloaded-link"><a href="#how-it-works">已下载？直接开始使用！</a></p>
+        </div>
+    </section>
+
+    <!-- 2. 价值对比区域: 我的痛点它真的懂吗？用了它有什么不同？ -->
+    <section class="content-section value-proposition">
+        <div class="container">
+            <h2>核心功能，专为高效而生。</h2>
+            <p class="section-subtitle problem-statement">
+                手动翻阅、查找关键信息、复制粘贴、反复核对……<br>
+                本应聚焦于价值分析的时间，却常常被这些繁琐的重复劳动所吞噬。<br>
+                是时候改变了。
+            </p>
+            <div class="comparison-grid" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="comparison-card">
+        <h3>智能提取，告别手动</h3>
+        <p>无需逐页 Ctrl+F。LawMoZ 智能识别并提取招股书中的公司概况、中介团队等关键信息，自动结构化呈现。</p>
+    </div>
+    <div class="comparison-card">
+        <h3>超长文档，精准解析</h3>
+        <p>不同于通用型 AI 工具，LawMoZ 针对超长篇幅的招股书进行深度优化，确保完整解析，信息无遗漏。</p>
+    </div>
+    <div class="comparison-card">
+        <h3>一键整合，信息就绪</h3>
+        <p>一键提取招股书核心数据，支持快速复制。关键信息即刻汇总，随时调用。</p>
+    </div>
+    <div class="comparison-card">
+        <h3>即开即用，无缝集成</h3>
+        <p>作为 Chrome 扩展，LawMoZ 无缝集成于您的浏览器。打开招股书 PDF，即可一键启动，更可自动下载中文版。</p>
+    </div>
+</div>
+        </div>
+    </section>
+
+    <!-- 3. 核心步骤区域: 听起来不错，用起来会很麻烦吗？ -->
+    <section class="content-section" id="how-it-works" style="background-color: var(--bg-color-light);">
+        <div class="container">
+            <h2>三步，就这么简单。</h2>
+            <p class="section-subtitle">告别繁琐配置，三步上手，秒获核心信息。</p>
+            <ol class="steps-list">
+                <li>
+                    <div class="step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6C4.9 2 4.01 2.9 4.01 4L4 20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2ZM13 9V3.5L18.5 9H13Z" fill="currentColor"/></svg>
+                    </div>
+                    <h3>打开招股书</h3>
+                    <p class="step-description">在 Chrome 浏览器中打开任意港交所招股书的 PDF 页面。</p>
+                </li>
+                <li>
+                    <div class="step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7s2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11Z" fill="currentColor"/></svg>
+                    </div>
+                    <h3>启动扩展</h3>
+                    <p class="step-description">点击浏览器右上角的 LawMoZ 扩展图标。</p>
+                </li>
+                <li>
+                    <div class="step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.01 4.49A3.5 3.5 0 0 0 8.5 7H6.5c-1.12 0-2.13.53-2.76 1.36L1 12l2.74 3.64C4.37 16.47 5.38 17 6.5 17h2a3.5 3.5 0 0 0 3.51-2.51A3.5 3.5 0 0 0 15.5 17h2c1.12 0 2.13-.53 2.76-1.36L23 12l-2.74-3.64C19.63 7.53 18.62 7 17.5 7h-2a3.5 3.5 0 0 0-3.49-2.51ZM8.5 9A1.5 1.5 0 1 1 8.5 6a1.5 1.5 0 0 1 0 3Zm7 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z" fill="currentColor"/></svg>
+                    </div>
+                    <h3>一键提取</h3>
+                    <p class="step-description">一键提取，AI 数秒内为您整理关键数据，解放双手。</p>
+                </li>
+            </ol>
+            <div style="text-align:center;margin-top:30px;">
+                <a href="https://www.chajianxw.com/tutorial/how-to-install-chrome-plugin.html" target="_blank" style="color:#5864e8;text-decoration:underline;font-size:16px;">安装指南</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 4. 关键产出区域: 它到底能帮我提取哪些具体信息？ -->
+    <section class="content-section features-showcase" style="background-color: var(--bg-color-white);">
+        <div class="container">
+            <h2>您需要的一切，井井有条。</h2>
+<p class="section-subtitle">AI 深度解析，百页招股书核心数据结构化呈现，告别手动翻查。</p>
+            <div class="feature-grid">
+                <div class="feature-item"> <div class="feature-icon"> <svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zm-2 10H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zM6 17H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V7h2v2z" fill="currentColor"/></svg> </div> <h3>公司画像速览</h3> <p>精准提取公司中英文名、类型、核心业务及行业归属，快速构建企业认知。</p> </div>
+<div class="feature-item"> <div class="feature-icon"> <svg viewBox="0 0 24 24"><path d="M17.42 12.44c.04.04.08.07.12.1s.09.06.13.09l1.41 1.41a.996.996 0 0 1 0 1.41l-1.41 1.41c-.04.04-.08.07-.12.1s-.09.06-.13.09c-.19.17-.43.25-.67.25s-.48-.08-.67-.25L15 15.71l-1.06 1.06c-.17.17-.39.26-.62.26s-.45-.09-.62-.26l-1.09-1.09a.596.596 0 0 0-.84 0L9.71 17l-1.06-1.06c-.17-.17-.39-.26-.62-.26s-.45-.09-.62-.26L6 14.29l-1.06 1.06c-.17.17-.39.26-.62.26s-.45-.09-.62-.26L2.29 13.7c-.34-.34-.34-.89 0-1.23l1.41-1.41c.04-.04.08-.07.12-.1s.09-.06.13-.09L5.37 9.5l1.06-1.06c.17-.17.39-.26.62-.26s.45.09.62.26l1.09 1.09c.23.23.61.23.84 0l1.06-1.06 1.06 1.06c.17.17.39.26.62.26s-.45-.09-.62-.26l1.41-1.41a.996.996 0 0 1 1.41 0l1.41 1.41c.04.04.08.07.12.1s.09.06.13.09l1.42 1.42c.34.34.34.89 0 1.23l-1.41 1.41c-.04.04-.08.07-.12.1s-.09.06-.13.09c-.19.17-.43.25-.67.25s-.48-.08-.67-.25L19 13.12l-1.58-1.57z" fill="currentColor"/></svg> </div> <h3>上市投行阵容</h3> <p>自动识别并列出主导上市的保荐人，关键中介信息尽在掌握。</p> </div>
+<div class="feature-item"> <div class="feature-icon"> <svg viewBox="0 0 24 24"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z" fill="currentColor"/></svg> </div> <h3>专业审计伙伴</h3> <p>快速定位财务报表审计的专业机构，了解财报背后的专业把关者。</p> </div>
+<div class="feature-item"> <div class="feature-icon"> <svg viewBox="0 0 24 24"><path d="M13 2.05v2.02c4.39.54 7.5 4.31 7.5 8.93s-3.11 8.39-7.5 8.93v2.02c5.5-.55 9.5-5.24 9.5-10.95s-4-10.4-9.5-10.95zM3.5 13c0-4.62 3.11-8.39 7.5-8.93V2.05c-5.5.55-9.5 5.24-9.5 10.95s4 10.4 9.5 10.95v-2.02C6.61 21.39 3.5 17.62 3.5 13z" fill="currentColor"/></svg> </div> <h3>法律专家团队</h3> <p>一键汇总发行人与保荐人的各项法律顾问名单，识别法律风险把控方。</p> </div>
+<div class="feature-item"> <div class="feature-icon"> <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z" fill="currentColor"/></svg> </div> <h3>行业研究智囊</h3> <p>快速识别提供行业洞察与市场分析的专业顾问，把握行业发展脉络。</p> </div>
+<div class="feature-item"> <div class="feature-icon"> <svg viewBox="0 0 24 24"><path d="M14.06 2.94a.996.996 0 0 0-1.41 0L6.34 9.25c-.39.39-.39 1.02 0 1.41l1.41 1.41c.39.39 1.02.39 1.41 0L12 9.12l2.83 2.83c.39.39 1.02.39 1.41 0l1.41-1.41c.39-.39.39-1.02 0-1.41L14.06 2.94zM3 15.5c0-.28.22-.5.5-.5h17c.28 0 .5.22.5.5v1c0 .28-.22.5-.5.5H10.5c-1.1 0-2 .9-2 2s.9 2 2 2H20.5c.28 0 .5.22.5.5v1c0 .28-.22.5-.5.5h-17c-.28 0-.5-.22-.5-.5V15.5z" fill="currentColor"/></svg> </div> <h3>便捷操作体验</h3> <p>整合关键操作：结果一键复制，中文版轻松获取，让信息处理更高效。</p> </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 最新动态区域 -->
+    <section class="content-section whats-new-section">
+        <div class="container">
+            <h2><svg class="inline-svg-icon" style="width:32px; height:32px; vertical-align:-6px; margin-right:8px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.293 10.293L12 3l-7.293 7.293A1.004 1.004 0 0 0 4 11h2v7a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-3h3v3a1 1 0 0 0 1 1H17a1 1 0 0 0 1-1v-7h2a1.004 1.004 0 0 0 .707-.707 1 1 0 0 0-.414-1z" fill="currentColor"/></svg>最新动态</h2>
+            <div class="scrolling-container">
+                <div class="scrolling-wrapper">
+                    <div class="update-cards-container">
+                        <!-- 卡片组 1 -->
+                        <div class="update-card">
+    <span class="update-date">2025年6月4日</span>
+    <h3>🚀 早期探索与基础构建</h3>
+    <ul>
+        <li>项目启动：聚焦工具选型与基础功能（弹窗）调试。</li>
+        <li>工具试错：Cursor遇阻，Manus致逻辑丢失。</li>
+        <li>难题攻克：AI辅助修复弹窗显示问题。</li>
+        <li>方向调整：“提取章节”逻辑复杂，转向“提取所有参与方”。</li>
+    </ul>
+</div>
+<div class="update-card">
+    <span class="update-date">2025年6月5日</span>
+    <h3>💡 核心功能迭代与AI集成</h3>
+    <ul>
+        <li>核心聚焦：投入提取逻辑与AI集成。</li>
+        <li>工具革新：转用WindSurfr (GPT-4.1)</li>
+        <li>AI策略：“章节定位+关键字段提取”；多Prompt并行调用</li>
+        <li>高效调试：建立“导出问题 -&gt; Claude 4修正 -&gt; 替换JS”闭环。</li>
+        <li>UI/UX完善：AI辅助Popup微调、进度条、欢迎页设计。</li>
+    </ul>
+</div>
+<div class="update-card">
+    <span class="update-date">2025年6月6日</span>
+    <h3>👍 v1.0 MVP 版本诞生!</h3>
+    <ul>
+        <li>智能引擎：正则+AI (GPT-4.1, Claude 4辅助) 解析关键章节，提取参与方。</li>
+        <li>基础UI：完成Popup弹窗 (HTML/CSS)，支持信息展示、复制、下载。</li>
+        <li>交互优化：增加操作进度条；Gemini 2.5 Pro设计欢迎页。</li>
+    </ul>
+</div>
+<div class="update-card">
+    <span class="update-date">2025年6月7日</span>
+    <h3>🎉 “港股招股书信息提取器” 正式上线!</h3>
+    <ul>
+        <li>高效部署：GitHub 打包及插件上线。</li>
+        <li>官宣发布：撰写并发布产品上线公告与介绍文章。</li>
+        <li>版本分发：完成首版本打包，启动分发流程。</li>
+    </ul>
+</div>
+                    </div>
+                    <div class="update-cards-container" aria-hidden="true">
+                        <!-- 卡片组 2 (复制) -->
+                        <div class="update-card">
+                            <span class="update-date">2025年6月5日</span>
+                            <h3><svg class="inline-svg-icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-2 14.59L6.41 11 5 12.41 10 17.41l8.59-8.59L17.17 7.41 10 14.59z" fill="currentColor"/></svg>版本 1.0 正式上线!</h3>
+                            <p>经过数月的精心打磨，“港股招股书信息提取器” v1.0 终于与大家见面！带来了前所未有的信息提取效率和丝滑体验。</p>
+                            <ul>
+                                <li>全新优化的AI引擎 (DeepSeek)，提取更精准、更全面。</li>
+                                <li>焕然一新的用户界面设计，操作更直观、更高效。</li>
+                                <li>增强对不同类型招股书章节的智能识别与兼容性。</li>
+                            </ul>
+                        </div>
+                        <div class="update-card">
+                            <span class="update-date">2025年5月20日</span>
+                            <h3>💡 Alpha 测试圆满结束</h3>
+                            <p>感谢所有Alpha测试用户的积极参与和宝贵反馈！我们已根据建议修复了多个已知问题，并对核心算法进行了大幅优化。您的支持是我们前进的最大动力！</p>
+                        </div>
+                         <div class="update-card">
+                            <span class="update-date">2025年4月15日</span>
+                            <h3>🚀 核心提取逻辑重大升级</h3>
+                            <p>完成了对招股书章节定位及专业机构信息提取逻辑的重构，大幅提升了复杂和非标招股书的处理成功率。AI更懂招股书！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 技术解密区域 - Redesigned -->
+    <section class="content-section tech-explained" style="background-color: var(--bg-color-light);">
+        <div class="container">
+            <!-- 修改: 标题和布局更新 -->
+            <h2>强大核心、AI 驱动</h2>
+            
+            
+            <div class="tech-description">
+                <span class="powered-by">Powered by DeepSeek</span>
+                <p>
+                    通过深度整合 DeepSeek 的强大 AI 能力，本工具将业界领先的自然语言理解技术，转化为高效、精准的招股书信息提取引擎。
+                </p>
+
+                <h4>精准，源于深度理解。</h4>
+                <p>
+                    一线实战经验构建招股书解读框架，从业者负责理解与梳理逻辑，AI 负责精准执行，为您呈现最有价值的信息。
+                </p>
+
+                <h4>高效，始于智能提炼。</h4>
+                <p>
+                    告别逐字阅读。AI 智能分析并归纳大篇幅内容，自动生成关键信息摘要，让您即刻掌握重要信息，大幅提升研读效率。
+                </p>
+                
+                <div class="advanced-users-note">
+    <p>寻求更深度的集成或个性化配置？我们为高级用户提供了灵活的 API 密钥设置选项。欢迎访问我们的<a href="https://github.com/siberpunk27/lawmoz-hkex-pptus-info-extractor" target="_blank">GitHub 仓库</a>，探索更多可能。</p>
+</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. 关于作者区域 -->
+    <section class="author-section content-section" style="background-color: var(--bg-color-white);"> 
+        <div class="container">
+            <!-- 修改: 标题和内容更新 -->
+            <h2 id="about-siber">关于@Siber</h2>
+            <div class="about-author">
+                <span style="display:block;font-size:1.12rem;color:#5864e8;font-weight:600;margin-bottom:6px;letter-spacing:0.5px;">联系 Siber获取试用版本</span>
+    <p>
+        前外所律师，港股资本市场一线从业者， All in AI。<br>
+        用 AI 赋能法律，聚焦交易领域的法律科技；<br> 用法律赋能 AI，为 AI 企业发展保驾护航。<br>
+        坚信构建，坚持持续学习者的创造性表达。<br>
+    </p>
+</div>
+            <div class="qr-container" style="text-align:center; margin-top: 12px;">
+    <img src="assets/wechat.png" class="author-qrcode" style="width:110px;max-width:30vw;margin:0 8px 8px 8px;" />
+    <img src="assets/wepublic.png" class="author-qrcode" style="width:110px;max-width:30vw;margin:0 8px 8px 8px;" />
+    <img src="assets/xhs.png" class="author-qrcode" style="width:110px;max-width:30vw;margin:0 8px 8px 8px;" />
+</div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <!-- 修改: 版权信息更新 -->
+            <p>&copy; 2025 LawmoZ. All rights reserved.</p>
+            <p>本工具旨在提高信息获取效率，提取结果仅供参考，请结合完整招股书进行决策。</p>
+        </div>
+    </footer>
+
+</body>
+</html>

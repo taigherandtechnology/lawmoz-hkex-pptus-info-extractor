@@ -1,0 +1,7 @@
+# 忽略所有敏感配置文件
+.env
+config/local_settings.py
+# Node/JS 常见
+node_modules/
+.DS_Store
+*.log

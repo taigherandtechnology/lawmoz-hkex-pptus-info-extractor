@@ -1,0 +1,71 @@
+{
+  "manifest_version": 3,
+  "name": "LawMoZ - 港股招股书信息提取器",
+  "version": "1.0.0",
+  "description": "由 AI 驱动的港股招股书信息提取工具 by LawMoZ",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  
+  "permissions": [
+    "activeTab",
+    "downloads",
+    "scripting",
+    "https://api.deepseek.com/*"
+  ],
+  
+  "host_permissions": [
+    "https://www1.hkexnews.hk/*"
+  ],
+  
+  "content_scripts": [
+    {
+      "matches": ["https://www1.hkexnews.hk/app/sehk/*/documents/*.pdf"],
+      "js": [
+        "lib/pdf.min.js",
+        "utils/logger.js",
+        "utils/config.js",
+        "utils/parser.js",
+        "utils/extractor.js",
+        "content-scripts/content.js",
+        "content-scripts/float-window.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "lib/pdf.worker.min.js"
+      ],
+      "matches": ["https://www1.hkexnews.hk/*"]
+    },
+    {
+      "resources": [
+        "lib/cmaps/*",
+        "lib/fonts/*",
+        "lib/images/*"
+      ],
+      "matches": ["<all_urls>"]
+    },
+    {
+      "resources": [
+        "assets/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "港股招股书信息提取器"
+  }
+}
