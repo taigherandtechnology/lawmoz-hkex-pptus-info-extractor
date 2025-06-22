@@ -6,7 +6,7 @@
         // DeepSeek API 配置
         ai: {
             enabled: true,
-            apiKey: '', // sk-04792e430b67421d9120e5997c459da3
+            apiKey: '', // 
             endpoint: 'https://api.deepseek.com/v1/chat/completions'
         },
         
